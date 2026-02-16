@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bswoyc0ue0bso"]
+
+[ext_resource type="TileSet" uid="uid://mg5iw7oq2yw2" path="res://tile_sets/terrain.tres" id="1_qebai"]
+[ext_resource type="Script" uid="uid://drc4es0stugc0" path="res://scenes/win/win.gd" id="1_v4fw4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_v4fw4"]
+size = Vector2(16, 14)
+
+[node name="Win" type="Area2D" unique_id=1616828472]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("1_v4fw4")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1781885304]
+position = Vector2(8, 8)
+shape = SubResource("RectangleShape2D_v4fw4")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1114167848]
+tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 2, 0, 7, 0, 5, 0, 0, 0)
+tile_set = ExtResource("1_qebai")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
