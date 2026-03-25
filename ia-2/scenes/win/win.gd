@@ -5,4 +5,7 @@ func _ready():
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("players"):
-		get_tree().quit()
+		call_deferred("_volver_al_menu")
+		
+func _volver_al_menu():
+	get_tree().change_scene_to_file("res://scenes/menu_principal/menu_principal.tscn")

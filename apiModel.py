@@ -2,9 +2,19 @@ from flask import Flask, request, jsonify
 from tensorflow import keras
 import tensorflow as tf
 from pydub import AudioSegment
+import time
 import numpy as np
+from vit import (
+    VisionTransformer,
+    PatchEmbedding,
+    AddPositionEmbedding,
+    TransformerBlock
+)
 
 app = Flask(__name__)
+
+cnnTime = []
+vitTime = []
 
 def getSpectrogram(audio):
 
@@ -43,6 +53,15 @@ def loadAudio(filePath, target_sample_rate=16000):
 
 equiv = ['down', 'go', 'left', 'no', 'off', 'on', 'right', 'stop', 'up', 'yes', '_silence_', '_unknown_']
 cnnModel = keras.models.load_model("models/0.95CNN.keras")
+vitModel = tf.keras.models.load_model(
+    "models/VIT_V2_0.94.keras",
+    custom_objects={
+        "VisionTransformer": VisionTransformer,
+        "PatchEmbedding": PatchEmbedding,
+        "AddPositionEmbedding": AddPositionEmbedding,
+        "TransformerBlock": TransformerBlock
+    }
+)
 
 @app.route("/cnn/predict", methods=["POST"])
 def predictWithCnn():
@@ -55,12 +74,39 @@ def predictWithCnn():
     spectrogram = []
     spectrogram.append(getSpectrogram(loadAudio("aux.wav")))
     spectrogram = tf.stack(spectrogram) 
+    start = time.time()
     prediction = cnnModel.predict(spectrogram)
+    end = time.time()
+    cnnTime.append(end - start)
+    if (len(cnnTime) == 20):
+        print(sum(cnnTime) / 20)
     prediction = np.argmax(prediction, axis=1)
     prediction = [equiv[i] for i in prediction]
     print(prediction)
     return jsonify({"msg": prediction[0]})
 
+
+@app.route("/vit/predict", methods=["POST"])
+def predictWithVit():
+    if 'file' not in request.files:
+        return jsonify({"error": "No se recibió el archivo enviado."})
+    
+    audio = request.files["file"]
+    audio.save("aux.wav")
+
+    spectrogram = []
+    spectrogram.append(getSpectrogram(loadAudio("aux.wav")))
+    spectrogram = tf.stack(spectrogram) 
+    start = time.time()
+    prediction = vitModel.predict(spectrogram)
+    end = time.time()
+    vitTime.append(end - start)
+    if (len(vitTime) == 20):
+        print(sum(vitTime) / 20)
+    prediction = np.argmax(prediction, axis=1)
+    prediction = [equiv[i] for i in prediction]
+    print(prediction)
+    return jsonify({"msg": prediction[0]})
 
 if (__name__ == "__main__"):
     

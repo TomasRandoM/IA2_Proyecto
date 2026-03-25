@@ -8,6 +8,7 @@ var doneUp = true
 var doneLeft = true
 var doneDown = true
 var doneRight = true
+var url = "http://127.0.0.1:6000/cnn/predict"
 var path = "user://auxAudio.wav"
 var effect
 var recording: AudioStreamWAV
@@ -46,28 +47,6 @@ func _physics_process(_delta):
 			if (doneLeft == false):
 				doneLeft = true
 				global_position.x += 2
-		if Input.is_action_just_pressed("up"):
-			lastDir = "up"
-			doneUp = false
-			velocity.y = -_velocidad
-			animation.play("runUp")
-		if Input.is_action_just_pressed("right"):
-			lastDir = "right"
-			velocity.x = _velocidad
-			doneRight = false
-			animation.play("runRight")
-			animation.flip_h = false
-		if Input.is_action_just_pressed("down"):
-			lastDir = "down"
-			velocity.y = +_velocidad
-			doneDown = false
-			animation.play("runDown")
-		if Input.is_action_just_pressed("left"):
-			lastDir = "left"
-			velocity.x = -_velocidad
-			doneLeft = false
-			animation.play("runRight")
-			animation.flip_h = true
 	else:	
 		if velocity.length() < 70.0:
 			velocity = Vector2.ZERO
@@ -97,7 +76,6 @@ func stopRecording():
 
 	
 func sendApi(file_bytes):
-	var url = "http://127.0.0.1:6000/cnn/predict"
 	var boundary = "----GodotFormBoundary123456"
 	
 	var body := "--%s\r\n" % boundary

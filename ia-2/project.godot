@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="IA2"
-run/main_scene="uid://qaos5enf6nbs"
+run/main_scene="uid://cteyt7ldjaf78"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 
